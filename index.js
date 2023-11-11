@@ -67,7 +67,7 @@ function askDayForVisit() {
     validateDayForVisit(dayForVisit);
   } catch(e) {
     if (e instanceof IllegalArgumentError) {
-      msgUtils.showError(msgUtils.getMsg('MSG_ERR_001', '날짜'));
+      msgUtils.showError(e.message);
       askDayForVisit(); // 재호출
       return false;
     }
@@ -115,7 +115,7 @@ function askOrderItems(menuList) {
 
   } catch(e) { 
     if (e instanceof IllegalArgumentError) {
-      msgUtils.showError(msgUtils.getMsg('MSG_ERR_001', '주문'));
+      msgUtils.showError(e.message);
       askOrderItems(menuList); // 재호출
       return null;
     }
@@ -197,7 +197,6 @@ function validateOrderItems(orderItems) {
 
   // validate - 중복 주문 없는지
   if (!checkNotDuplicateInOrder(orderItems)) {
-    alert('aaaaaaaaa');
     throw new IllegalArgumentError(msgUtils.getMsg('MSG_ERR_001', '주문'));
   }
 
