@@ -8,6 +8,7 @@ import { OrderItem } from './entity/OrderItem.js';
 
 /*** 메인 영역 ***/
 window.play = play;
+play();
 
 /*** 함수 영역 ***/
 
