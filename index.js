@@ -466,7 +466,7 @@ function calBenefitOfSpecialSale(dayForVisit, orderItems, menuList) {
   }
 
   const discountAmt = G.SPECIAL_SALE_TOTAL;
-  const benefit = new Benefit({name: G.BENEFIT_NAME_WEEKEND_SALE, discountAmt: discountAmt});
+  const benefit = new Benefit({name: G.BENEFIT_NAME_SPECIAL_SALE, discountAmt: discountAmt});
   return benefit;  
 }
 
