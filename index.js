@@ -121,7 +121,7 @@ function askOrderItems(menuList) {
 
   } catch(e) { 
     if (e instanceof IllegalArgumentError) {
-      msgUtils.showError(msgUtils.getMsg("MSG_ERR_001", "날짜"));
+      msgUtils.showError(msgUtils.getMsg("MSG_ERR_001", "주문"));
       askOrderItems(); // 재호출
       return false;
     }
