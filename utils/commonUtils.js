@@ -1,5 +1,7 @@
+import G from '../constants/globalConstants.js';
+
 const commonUtils = function() {
-  
+
   /**
    * API 호출
    * @param {*} url 
@@ -15,14 +17,14 @@ const commonUtils = function() {
    * 금액 포맷 반환
    */
   function getFormatAmt(amt) {
-    return amt.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '원';
+    return amt.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + G.UNIT_AMT;
   }
 
   /**
    * 할인금액 포맷 반환
    */
   function getFormatDiscountAmt(amt) {
-    return '-' + amt.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '원';
+    return '-' + amt.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + G.UNIT_AMT;
   }
 
   /**

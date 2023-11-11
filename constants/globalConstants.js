@@ -3,12 +3,16 @@ const constants = {
   MIN_DAY_FOR_VISIT: 1,
   MAX_DAY_FOR_VISIT: 31,
   MAX_ORDER_COUNT: 20,
+
+  CHRISTMAS_D_DAY_SALE_DEFAULT: 1000,
+  CHRISTMAS_D_DAY_SALE_EVERY_DAY: 100,
   GIFT_EVENT_CONDITION_AMT: 120000,
 
   ITEM_TYPE_DRINK: '음료',
 
   TEXT_EMPTY: '없음',
   UNIT_COUNT: '개',
+  UNIT_AMT: '원',
 
   MENU_DELIMITER:',',
   ORDER_DELIMITER:'-',
@@ -17,8 +21,8 @@ const constants = {
   TITLE_ORDER_MENU: '<주문 메뉴>',
   TITLE_BF_SALE_TOTAL_AMT: '<할인 전 총주문 금액>',
   TITLE_GIFT_MENU: '<증정 메뉴>',
-  TITLE_BENEFITS_LIST: '<혜택 내역>',
-  TITLE_TOTAL_BENEFITS_AMT: '<총혜택 금액>',
+  TITLE_BENEFIT_LIST: '<혜택 내역>',
+  TITLE_TOTAL_BENEFIT_AMT: '<총혜택 금액>',
   TITLE_AF_SALE_TOTAL_AMT: '<할인 후 예상 결제 금액>',
   TITLE_12_EVENT_BADGE: '<12월 이벤트 배지>',
 

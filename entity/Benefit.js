@@ -23,11 +23,14 @@ export class Benefit {
   }
 
   getGiftTotalValue() {
+    if (!this.hasGift()) {
+      return 0;
+    }
     return this._gift.getTotalValue();
   }
 
   getTotalValue() {
-    return this._discountAmt + getGiftTotalValue();
+    return this._discountAmt + this.getGiftTotalValue();
   }
 
   hasGift() {

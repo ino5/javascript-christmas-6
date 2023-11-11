@@ -34,7 +34,7 @@ async function play() {
   const allBenefitList = calAllBenefitList(dayForVisit, orderItems, menuList);
 
   // 나의 이벤트 혜택 보여주기
-  showMsgMyEventBenefits(dayForVisit, orderItems, menuList, allBenefitList);
+  showMsgMyEventBenefits(dayForVisit, orderItems, allBenefitList, menuList);
 
 }
 
@@ -344,21 +344,37 @@ function checkInMenuList(orderItem, menuList) {
 function calAllBenefitList(dayForVisit, orderItems, menuList) {
   const allBenefitList = [];
 
+  // 크리스마스 디데이 할인 혜택 구하기
+  const benefitOfDDay = calBenefitOfDDay(dayForVisit);
+
   // 증정 이벤트 혜택 구하기
-  const benefitListOfGift = calBenefitListOfGiftEvent(dayForVisit, orderItems, menuList);
-  allBenefitList.push(...benefitListOfGift);
+  const benefitListOfGift = calBenefitListOfGiftEvent(orderItems, menuList);
+  
+  // 전체혜택목록에 담기
+  allBenefitList.push(benefitOfDDay, ...benefitListOfGift);
   
   return allBenefitList;
 }
 
 /**
- * 증정 이벤트 혜택 구하기
+ * 크리스마스 디데이 할인 혜택 구하기
  * @param {number} dayForVisit 
+ * @returns {Benefit}
+ */
+function calBenefitOfDDay(dayForVisit) {
+  const diffFromOneDay = dayForVisit - 1; // 12/1일부터의 차이
+  const discountAmt = G.CHRISTMAS_D_DAY_SALE_DEFAULT + G.CHRISTMAS_D_DAY_SALE_EVERY_DAY * diffFromOneDay;
+  const benefit = new Benefit({name: G.BENEFIT_NAME_CHRISTMAS_D_DAY_SALE, discountAmt: discountAmt});
+  return benefit;
+}
+
+/**
+ * 증정 이벤트 혜택 구하기
  * @param {Array<OrderItem>} orderItems
  * @param {Array<MenuItem>} menuList 
  * @returns {Array<Benefit>}
  */
-function calBenefitListOfGiftEvent(dayForVisit, orderItems, menuList) {
+function calBenefitListOfGiftEvent(orderItems, menuList) {
   let benefitList = [];
 
   // 총주문 금액 12만 원 이상일 때, 샴페인 1개 증정
@@ -380,20 +396,23 @@ function calBenefitListOfGiftEvent(dayForVisit, orderItems, menuList) {
  * @param {Array<MenuItem>} menuList 
  * @param {Array<Benefit>} allBenefitList
  */
-function showMsgMyEventBenefits(dayForVisit, orderItems, menuList, allBenefitList) {
+function showMsgMyEventBenefits(dayForVisit, orderItems, allBenefitList, menuList) {
   let allMessage = ""; // 마지막에 보여줄 전체 메시지
 
-  // 제목 보여주기
+  // 제목 가져오기
   allMessage += getMsgMyEventBenefitsTitle(dayForVisit) + '\n';
 
-  // 주문 메뉴 메시지 보여주기
+  // 주문 메뉴 메시지 가져오기
   allMessage += getMsgMyOrderItems(orderItems) + '\n';
 
-  // 할인 전 총주문 금액 메시지 보여주기
+  // 할인 전 총주문 금액 메시지 가져오기
   allMessage += getMsgBfSaleTotalAmt(orderItems, menuList) + '\n';
 
-  // 증정 메뉴 메시지 보여주기
-  allMessage += getMsgGiftMenu(menuList, allBenefitList);
+  // 증정 메뉴 메시지 가져오기
+  allMessage += getMsgGiftMenu(allBenefitList) + '\n';
+
+  // 혜택 내역 메시지 가져오기
+  allMessage += getMsgBenefitList(allBenefitList);
 
   // 전체 메시지 보여주기
   msgUtils.showMsg(allMessage);
@@ -401,7 +420,7 @@ function showMsgMyEventBenefits(dayForVisit, orderItems, menuList, allBenefitLis
 }
 
 /**
- * 이벤트 혜택 제목 보여주기
+ * 이벤트 혜택 제목 가져오기
  * @param {*} dayForVisit 
  */
 function getMsgMyEventBenefitsTitle(dayForVisit) {
@@ -411,7 +430,7 @@ function getMsgMyEventBenefitsTitle(dayForVisit) {
 }
 
 /**
- * 주문 메뉴 메시지 보여주기
+ * 주문 메뉴 메시지 가져오기
  * @param {Array<OrderItem>} orderItems 
  */
 function getMsgMyOrderItems(orderItems) {
@@ -426,42 +445,63 @@ function getMsgMyOrderItems(orderItems) {
 }
 
 /**
- * 할인 전 총주문 금액 보여주기
+ * 할인 전 총주문 금액 가져오기
  * 
  * @param {Array<OrderItem>} orderItems
  * @param {Array<MenuItem>} menuList
  */
 function getMsgBfSaleTotalAmt(orderItems, menuList) {
-  let message = "";
-  message += `${G.TITLE_BF_SALE_TOTAL_AMT}\n`;
+  const titleMessage = `${G.TITLE_BF_SALE_TOTAL_AMT}\n`;
 
   let totalCost = calBfSaleTotalAmt(orderItems, menuList);
-  message += `${commonUtils.getFormatAmt(totalCost)}\n`;
+  const contentMessage = `${commonUtils.getFormatAmt(totalCost)}\n`;
 
+  const message = titleMessage + contentMessage;
   return message;
 }
 
 /**
- * 증정 메뉴 메시지 보여주기
+ * 증정 메뉴 메시지 가져오기
  * 
- * @param {Array<MenuItem>} menuList
  * @param {Array<Benefit>} allBenefitList
  */
-function getMsgGiftMenu(menuList, allBenefitList) {
+function getMsgGiftMenu(allBenefitList) {
   const titleMessage = `${G.TITLE_GIFT_MENU}\n`;
 
-  let listMessage = "";
+  let contentMessage = "";
   allBenefitList.filter(benefit => benefit.hasGift()).forEach(benefit => {
     const name = benefit.getGift().getName();
     const count = benefit.getGift().getCount();
-    listMessage += `${name} ${count}${G.UNIT_COUNT}\n`;
+    contentMessage += `${name} ${count}${G.UNIT_COUNT}\n`;
   });
-  if (listMessage == null || listMessage == "") {
-    listMessage = `${G.TEXT_EMPTY}\n`;
+  if (contentMessage == null || contentMessage == "") {
+    contentMessage = `${G.TEXT_EMPTY}\n`;
   }
 
-  const message = titleMessage + listMessage;
+  const message = titleMessage + contentMessage;
   return message;
+}
+
+/**
+ * 혜택 내역 메시지 가져오기
+ * 
+ * @param {Array<Benefit>} allBenefitList
+ */
+function getMsgBenefitList(allBenefitList) {
+  const titleMessage = `${G.TITLE_BENEFIT_LIST}\n`;
+
+  let contentMessage = "";
+  allBenefitList.forEach(benefit => {
+    const name = benefit.getName();
+    const totalValue = benefit.getTotalValue();
+    contentMessage += `${name} -${commonUtils.getFormatAmt(totalValue)}\n`;
+  });
+  if (contentMessage == null || contentMessage == "") {
+    contentMessage = `${G.TEXT_EMPTY}\n`;
+  }
+
+  const message = titleMessage + contentMessage;
+  return message;  
 }
 
 /**
