@@ -153,7 +153,7 @@ function convertInputToOrderInputArr(inputStr) {
  */
 function validateOrderInpuArr(orderInputArr) {
   // 배열 길이 체크
-  if (orderInputArr == null || orderInputArr.length < 1) {
+  if (commonUtils.isEmptyArray(orderInputArr)) {
     throw new IllegalArgumentError(msgUtils.getMsg('MSG_ERR_001', '주문'));
   }
 
@@ -197,7 +197,7 @@ function convertArrToOrderItems(orderInputArr, menuList) {
  */
 function validateOrderItems(orderItems, menuList) {
   // validate - 항목 개수가 1개 이상인지
-  if (! (orderItems != null && orderItems.length > 0) ) {
+  if (commonUtils.isEmptyArray(orderItems)) {
     throw new IllegalArgumentError(msgUtils.getMsg('MSG_ERR_001', '주문'));
   }
 

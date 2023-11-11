@@ -34,11 +34,30 @@ const commonUtils = function() {
     return JSON.parse(JSON.stringify(paramObj));
   }
 
+  /**
+   * 배열이 비었거나 null인지 확인
+   * 
+   * @param {Array} param
+   */
+  function isEmptyArray(param) {
+    try {
+      if (param != null && Number(param.length) > 0) {
+        return false;
+      }
+
+    } catch(e) {
+      return true;
+    }
+
+    return true;
+  }
+
   return {
     callApi,
     getFormatAmt,
     getFormatDiscountAmt,
     deepCopyObj,
+    isEmptyArray,
   }
 }
 
