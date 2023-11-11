@@ -178,7 +178,7 @@ function convertArrToOrderItems(orderInputArr, menuList) {
   });
 
   // 주문항목목록 validate
-  validateOrderItems(orderItems);
+  validateOrderItems(orderItems, menuList);
 
   return orderItems;
 }
@@ -189,15 +189,20 @@ function convertArrToOrderItems(orderInputArr, menuList) {
  * @param {Array<OrderItem>} orderItems 
  * @returns 
  */
-function validateOrderItems(orderItems) {
+function validateOrderItems(orderItems, menuList) {
   // validate - 항목 개수가 1개 이상인지
   if (! (orderItems != null && orderItems.length > 0) ) {
     throw new IllegalArgumentError(msgUtils.getMsg('MSG_ERR_001', '주문'));
   }
 
-  // validate - 중복 주문 없는지
-  if (!checkNotDuplicateInOrder(orderItems)) {
+  // validate - 중복 주문 없는지 확인
+  if (checkDuplicateInOrder(orderItems)) {
     throw new IllegalArgumentError(msgUtils.getMsg('MSG_ERR_001', '주문'));
+  }
+
+  // validate - 음료만 주문했는지 확인
+  if (checkOnlyDrinkInOrder(orderItems, menuList)) {
+    throw new IllegalArgumentError(msgUtils.getMsg('MSG_WRN_002', '주문'));
   }
 
   return true;
@@ -209,7 +214,7 @@ function validateOrderItems(orderItems) {
  * @param {Array<OrderItem>} orderItems 
  * @returns {boolean}
  */
-function checkNotDuplicateInOrder(orderItems) {
+function checkDuplicateInOrder(orderItems) {
   const nameSet = new Set();
   const isDuplicated = orderItems.some(item => {
     if (nameSet.has(item.getName())) {
@@ -219,14 +224,46 @@ function checkNotDuplicateInOrder(orderItems) {
     return false;
   });
 
-  return !isDuplicated;
+  return isDuplicated;
+}
+
+/**
+ * 음료만 주문했는지 확인
+ * 
+ * @param {Array<OrderItem>} orderItems
+ * @param {Array<MenuItem>} menuList
+ * @returns {boolean}
+ */
+function checkOnlyDrinkInOrder(orderItems, menuList) {
+  const hasExceptDrink = orderItems.some(orderItem => {
+    const type = getTypeByMenuName(orderItem.getName(), menuList);
+    return type != G.ITEM_TYPE_DRINK // 음료 아닌 것을 가지고 있는지
+  });
+  const hasOnlyDrink = !hasExceptDrink; // 음료 제외하고 가지고 있는 게 없다면 오직 음료만 가지고 있음
+  return hasOnlyDrink;
+}
+
+/**
+ * 메뉴 타입 가져오기
+ * 
+ * @param {string} menuName
+ * @param {Array<MenuItem>} menuList
+ * @returns {string}
+ */
+function getTypeByMenuName(menuName, menuList) {
+  for (let i = 0; i < menuList.length; i++) {
+    if (menuName == menuList[i].getName()) {
+      return menuList[i].getType();
+    }
+  }
+  throw new IllegalArgumentError(msgUtils.getMsg('MSG_ERR_002'));
 }
 
 /**
  * 문자열을 OrderItem으로 변환
  * 
  * @param {string} orderInput '메뉴이름-주문수'
- * @param {*} menuList 
+ * @param {Array<MenuItem>} menuList
  * @returns {OrderItem}
  */
 function convertStringToOrderItem(orderInput, menuList) {
