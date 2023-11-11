@@ -195,7 +195,7 @@ function convertArrToOrderItems(orderInputArr, menuList) {
  * @returns 
  */
 function validateOrderItems(orderItems, menuList) {
-  // validate - 항목 개수가 1개 이상인지
+  // validate - 항목 개수가 1개 이상인지 확인
   if (commonUtils.isEmptyArray(orderItems)) {
     throw new IllegalArgumentError(msgUtils.getMsg('MSG_ERR_001', '주문'));
   }
@@ -210,7 +210,7 @@ function validateOrderItems(orderItems, menuList) {
     throw new IllegalArgumentError(msgUtils.getMsg('MSG_WRN_002'));
   }
 
-  // validate - 메뉴 한 번에 최대 주문개수 초과
+  // validate - 최대 주문개수 초과 확인
   if (getTotalCountInOrder(orderItems) > G.MAX_ORDER_COUNT) {
     throw new IllegalArgumentError(msgUtils.getMsg('MSG_WRN_003'));
   }
