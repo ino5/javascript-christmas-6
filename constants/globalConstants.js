@@ -7,7 +7,7 @@ const constants = {
 
   MENU_DELIMITER:',',
   ORDER_DELIMITER:'-',
-  REGEX_ORDER_INPUT_ITEM: /^(.+)-(\d)$/, // "문자-숫자" 형태
+  REGEX_ORDER_INPUT_ITEM: /^(.+)-(\d*)$/, // "문자-숫자" 형태
 }
 
 export default constants;
