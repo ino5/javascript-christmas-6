@@ -2,11 +2,8 @@ import env from './env.js';
 import G from './constants/globalConstants.js';
 import msgUtils from './utils/messageUtils.js';
 import { IllegalArgumentError } from './errors/IllegalArgumentError.js';
-
-
-
-/*** 상수 ***/
-const MENU_DELIMITER = ',';
+import { MenuItem } from './entity/MenuItem.js';
+import commonUtils from './utils/commonUtils.js';
 
 
 /*** 메인 영역 ***/
@@ -24,13 +21,35 @@ if (env.isDev()) { // 개발모드일 경우 수동으로 실행
 /**
  * 실행
  */
-function play() {
+async function play() {
+  // 메뉴 가져오기
+  const menuList = await getMenuList();
+
   // 안내인사
   showMsgGreeting();
 
   // 방문날짜 입력 받기
-  promptMsgDayForVisit();
+  const dayForVisit = askDayForVisit();
+
+  // 주문 받기
+  const orderItems = askOrderItems(menuList);
   
+}
+
+/**
+ * 메뉴 가져오기
+ * @returns 
+ */
+async function getMenuList() {
+  const menuList = [];
+
+  const resJson = await commonUtils.callApi(G.URL_GET_MENU_LIST);
+  resJson.forEach(item => {
+    const menuItem = new MenuItem(item);
+    menuList.push(menuItem);
+  })
+  
+  return menuList;
 }
 
 /**
@@ -42,19 +61,23 @@ function showMsgGreeting() {
 
 /**
  * 방문 날짜 입력받기
+ * 
+ * @returns 방문할 날짜
  */
-function promptMsgDayForVisit() {
+function askDayForVisit() {
   // prompt 호출
   const dayForVisit = msgUtils.promptMsg(msgUtils.getMsg("MSG_PRT_001", G.NOW_MONTH));
 
-  // 입력값이 유효하지 않으면 에러메시지 호출 후 재호출
+  // 입력값 validate
   try {
     validateDayForVisit(dayForVisit);
   } catch(e) {
     if (e instanceof IllegalArgumentError) {
-      msgUtils.showError(e.message);
-      promptMsgDayForVisit();
+      msgUtils.showError(msgUtils.getMsg("MSG_ERR_001", "날짜"));
+      askDayForVisit(); // 재호출
+      return false;
     }
+    throw e;
   }
 
   return dayForVisit;
@@ -62,85 +85,86 @@ function promptMsgDayForVisit() {
 
 /**
  * 방문 날짜 vaildate
+ * 
+ * @param {*} dayForVisit 
+ * @returns {boolean}
  */
 function validateDayForVisit(dayForVisit) {
   // validate - 숫자 여부
   if (isNaN(dayForVisit)) {
-    throw new IllegalArgumentError(msgUtils.getMsg("MSG_ERR_001"));
+    throw new IllegalArgumentError(msgUtils.getMsg("MSG_ERR_001", "날짜"));
   }
 
   // validate - 수 범위
   if ((dayForVisit < G.MIN_DAY_FOR_VISIT || dayForVisit > G.MAX_DAY_FOR_VISIT)) {
-    throw new IllegalArgumentError(msgUtils.getMsg("MSG_ERR_001"));
+    throw new IllegalArgumentError(msgUtils.getMsg("MSG_ERR_001", "날짜"));
   }
 
   return true;
 }
 
+/**
+ * 주문항목 목록 입력받기
+ * 
+ * @param {Array<MenuItem>} menuList
+ * @returns 
+ */
+function askOrderItems(menuList) {
+  // prompt 호출
+  const orderItemsInput = msgUtils.promptMsg(msgUtils.getMsg("MSG_PRT_002"));
 
+  // 주문항목목록으로 변환
+  let orderItems;
+  try {
+    const orderInputArr = convertInputToOrderInputArr(orderItemsInput); // 입력값 -> 입력값 배열
+    // 입력값 배열 -> 주문항목목록 // TODO
 
-
-
-
-
-////////////////////////////////////
-/* 삭제 예정 */
-
-
-function orderObjFactory() {
-  let _dayForVisit; // 예약일
-
-  /**
-   * 예약일 받기
-   */
-  function askDayForVisit() {
-    // prompt
-    const promptResult = promptMsg(msgUtils.getMsg("MSG_PRT_001")); // 방문날짜 입력받기
-
-    // validate - 수 범위
-    if (isNaN(promptResult) || (promptResult < MIN_DAY_FOR_VISIT || promptResult > MAX_DAY_FOR_VISIT)) {
-      showError("MSG_ERR_001");
-      askDayForVisit();
+  } catch(e) { 
+    if (e instanceof IllegalArgumentError) {
+      msgUtils.showError(msgUtils.getMsg("MSG_ERR_001", "날짜"));
+      askOrderItems(); // 재호출
+      return false;
     }
+    throw e;
   }
 
-  /**
-   * 주문받기
-   */
-  function askMenuOrder() {
-    // prompt
-    const promptResult = promptMsg(msgUtils.getMsg("MSG_PRT_002")); // 주문받기
-    let menuOrders = promptResult.split(MENU_DELIMITER);
-    menuOrders = menuOrders.map(item => item.trim());
-
-    // 각 메뉴에 대한 validate
-    const nameOrderedSet = new Set(); // 주문메뉴이름 Set
-    menuOrders.forEach(item => {
-      // validate - 메뉴 형식
-      if (!/(.+)-(\d)/.test(item)) { // "문자-숫자" 형태
-        showError(msgUtils.getMsg("MSG_ERR_002"));
-      }
-
-      // validate - 메뉴판에 없는 메뉴
-
-      // validate - 메뉴 개수
-
-      // validate - 중복 메뉴
-
-      // 주문메뉴이름 Set 추가
-    })
-    
-  }
-
-  return {
-    askDayForVisit,
-    askMenuOrder,
-  };
+  return orderItems;
 }
 
-/* 메뉴판 객체 */
-function menuBoardFactory() {
-  // const response = await fetch("/menu.json");
+/**
+ * 주문 입력값을 배열로 split
+ * 
+ * @param {*} inputStr 
+ * @returns 주문입력 배열
+ */
+function convertInputToOrderInputArr(inputStr) {
+  // 배열로 split
+  const orderInputArr = inputStr.split(G.MENU_DELIMITER).map(item => item.trim());
+
+  // 주문입력 배열 validate
+  validateOrderInpuArr(orderInputArr);
+
+  return orderInputArr;
+}
+
+/**
+ * 주문입력 배열 validate
+ * @param {*} orderArr 
+ */
+function validateOrderInpuArr(orderInputArr) {
+  // 배열 길이 체크
+  if (orderInputArr == null || orderInputArr.length < 1) {
+    throw new IllegalArgumentError(msgUtils.getMsg("MSG_ERR_001", "주문"));
+  }
+
+  // 입력값 형태 validate
+  orderInputArr.forEach(item => {
+    if (!G.REGEX_ORDER_INPUT_ITEM.test(item)) { // "문자-숫자" 형태
+      throw new IllegalArgumentError(msgUtils.getMsg("MSG_ERR_001", "주문"));
+    }
+  });
+
+  return true;
 }
 
 

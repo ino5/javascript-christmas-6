@@ -2,8 +2,8 @@ const commonUtils = function() {
   
   /**
    * API 호출
-   * 
-   * @param {String} url 
+   * @param {*} url 
+   * @returns resJson
    */
   async function callApi(url) {
     const res = await fetch(url);
