@@ -24,7 +24,7 @@ const commonUtils = function() {
    * 할인금액 포맷 반환
    */
   function getFormatDiscountAmt(amt) {
-    return '-' + amt.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + G.UNIT_AMT;
+    return '-' + getFormatAmt(amt);
   }
 
   /**
