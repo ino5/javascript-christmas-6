@@ -29,6 +29,7 @@ const constants = {
   TEXT_EMPTY: '없음',
   UNIT_COUNT: '개',
   UNIT_AMT: '원',
+  ITEM_PREFIX: '▷ ',
 
   DAY_OF_WEEK_FRIDAY: 5,
   DAY_OF_WEEK_SATURDAY: 6,
@@ -38,6 +39,7 @@ const constants = {
   ORDER_DELIMITER:'-',
   REGEX_ORDER_INPUT_ITEM: /^(.+)-(\d*)$/, // "문자-숫자" 형태
 
+  TITLE_EVENT_WARN_LIST: '<이벤트 주의 사항>',
   TITLE_MENU_LIST: '<메뉴 목록>',
   TITLE_ORDER_MENU: '<주문 메뉴>',
   TITLE_BF_SALE_TOTAL_AMT: '<할인 전 총주문 금액>',

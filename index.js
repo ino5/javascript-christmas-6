@@ -60,7 +60,28 @@ async function getMenuList() {
  * 안내인사 보여주기
  */
 function showMsgGreeting() {
-  msgUtils.showMsg(msgUtils.getMsg('MSG_INF_001', G.EVENT_MONTH));
+  let outputMsg = msgUtils.getMsg('MSG_INF_001', G.EVENT_MONTH);
+
+  // 주의사항 메시지 추가하기
+  outputMsg += '\n';
+  outputMsg += getMsgWarn();
+
+  msgUtils.showMsg(outputMsg);
+}
+
+/**
+ * 주의사항 메시지 보여주기
+ */
+function getMsgWarn() {
+  let titleMsg = `\n${G.TITLE_EVENT_WARN_LIST}\n`;
+  let outputMsg = titleMsg;
+  
+  const warnMsgArr = [msgUtils.getMsg('MSG_WRN_001'), msgUtils.getMsg('MSG_WRN_002'), msgUtils.getMsg('MSG_WRN_003')];
+  for (let i = 0; i < warnMsgArr.length; i++) {
+    outputMsg += G.ITEM_PREFIX + warnMsgArr[i] + '\n';
+  }
+  
+  return outputMsg;
 }
 
 /**
@@ -80,7 +101,7 @@ function showMsgMenuList(menuList) {
   // 메뉴 종류별로 배열에 담기
   menuList.forEach(menuItem => {
     const menuStr = `${menuItem.getName()}(${commonUtils.getFormatAmt(menuItem.getCost())})`; // "[메뉴명]([가격])"
-    for (var i = 0; i < typeOrders.length; i++) {
+    for (let i = 0; i < typeOrders.length; i++) {
       const type = typeOrders[i];
       const strArr = strArrOrders[i];
       if (menuItem.getType() == type) {
@@ -92,10 +113,10 @@ function showMsgMenuList(menuList) {
   // 출력 문자열에 제목 추가
   let outputStr = '';
   const title = `${G.TITLE_MENU_LIST}\n`;
-  outputStr += title + '\n';
+  outputStr += title;
 
   // 출력 문자열에 메뉴 추가
-  for (var i = 0; i < typeOrders.length; i++) {
+  for (let i = 0; i < typeOrders.length; i++) {
     const type = typeOrders[i];
     const strArr = strArrOrders[i];
     outputStr += `[${type}]\n`;
