@@ -6,6 +6,7 @@ const message = {
 
   MSG_INF_001: `안녕하세요! 우테코 식당 ${MSG_PARAM}월 이벤트 플래너입니다.`,
   MSG_INF_002: `취소하였습니다.`,
+  MSG_INF_003: `${MSG_PARAM}월 ${MSG_PARAM}일에 우테코 식당에서 받을 이벤트 혜택 미리 보기!`,
 
   MSG_CFM_001: `정말 취소하시겠습니까?`,
 

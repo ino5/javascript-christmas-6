@@ -5,6 +5,7 @@ import commonUtils from './utils/commonUtils.js';
 import { IllegalArgumentError } from './errors/IllegalArgumentError.js';
 import { MenuItem } from './entity/MenuItem.js';
 import { OrderItem } from './entity/OrderItem.js';
+import message from './constants/messageConstants.js';
 
 /*** 메인 영역 ***/
 window.play = play;
@@ -27,7 +28,10 @@ async function play() {
 
   // 주문 받기
   const orderItems = askOrderItems(menuList);
-  
+
+  // 이벤트 혜택 보여주기
+  showMsgEventBenefits(dayForVisit, orderItems);
+
 }
 
 /**
@@ -50,7 +54,7 @@ async function getMenuList() {
  * 안내인사 보여주기
  */
 function showMsgGreeting() {
-  msgUtils.showMsg(msgUtils.getMsg('MSG_INF_001', G.NOW_MONTH));
+  msgUtils.showMsg(msgUtils.getMsg('MSG_INF_001', G.EVENT_MONTH));
 }
 
 /**
@@ -60,7 +64,7 @@ function showMsgGreeting() {
  */
 function askDayForVisit() {
   // prompt 호출
-  const dayForVisit = msgUtils.promptMsg(msgUtils.getMsg('MSG_PRT_001', G.NOW_MONTH));
+  const dayForVisit = msgUtils.promptMsg(msgUtils.getMsg('MSG_PRT_001', G.EVENT_MONTH));
 
   // 입력값 validate
   try {
@@ -326,4 +330,14 @@ function validateOrderItem(orderItem, menuList) {
 function checkInMenuList(orderItem, menuList) {
   const existsInMenuList = menuList.some(menuItem => menuItem.getName() == orderItem.getName());
   return existsInMenuList;  
+}
+
+/**
+ * 이벤트 혜택 보여주기
+ * @param {number} dayForVisit 
+ * @param {Array<OrderItem>} orderItems 
+ */
+function showMsgEventBenefits(dayForVisit, orderItems) {
+  // 제목 보여주기
+  msgUtils.showMsg(msgUtils.getMsg('MSG_INF_003', G.EVENT_MONTH, dayForVisit));
 }
