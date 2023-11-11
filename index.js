@@ -343,6 +343,13 @@ function checkInMenuList(orderItem, menuList) {
 function calAllBenefitList(dayForVisit, orderItems, menuList) {
   const allBenefitList = [];
 
+  // 일정금액 미만일 경우 혜택 부여하지 않음.
+  const bfSaleTotalAmt = calBfSaleTotalAmt(orderItems, menuList);
+  if (bfSaleTotalAmt < G.BENEFIT_CONDITION_AMT) {
+    msgUtils.showMsg(msgUtils.getMsg("MSG_WRN_001"));
+    return [];
+  }
+
   // 크리스마스 디데이 할인 혜택 구하기
   const benefitOfDDay = calBenefitOfDDay(dayForVisit, orderItems, menuList);
 
