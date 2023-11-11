@@ -1,4 +1,4 @@
-const constMsg = {
+const message = {
   INF_001: '안녕하세요! 우테코 식당 12월 이벤트 플래너입니다.',
 
   PRT_001: '12월 중 식당 예상 방문 날짜는 언제인가요? (숫자만 입력해 주세요!)',
@@ -8,4 +8,4 @@ const constMsg = {
   ERR_002: '유효하지 않은 주문입니다. 다시 입력해 주세요.',
 }
 
-export default constMsg;
+export default message;
