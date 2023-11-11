@@ -1,4 +1,3 @@
-import env from './env.js';
 import G from './constants/globalConstants.js';
 import msgUtils from './utils/messageUtils.js';
 import commonUtils from './utils/commonUtils.js';
@@ -347,11 +346,19 @@ function calAllBenefitList(dayForVisit, orderItems, menuList) {
   // 크리스마스 디데이 할인 혜택 구하기
   const benefitOfDDay = calBenefitOfDDay(dayForVisit);
 
+  // 평일 할인 혜택 구하기
+  const benefitOfWeekdaysSale = calBenefitOfWeekdaysSale(dayForVisit, orderItems, menuList);
+
+  // 주말 할인 혜택 구하기
+  const benefitOfWeekendSale = calBenefitOfWeekendSale(dayForVisit, orderItems, menuList);
+
+  // 특별 할인 혜택 구하기
+
   // 증정 이벤트 혜택 구하기
   const benefitListOfGift = calBenefitListOfGiftEvent(orderItems, menuList);
   
   // 전체혜택목록에 담기
-  allBenefitList.push(benefitOfDDay, ...benefitListOfGift);
+  allBenefitList.push(benefitOfDDay, benefitOfWeekdaysSale, benefitOfWeekendSale, ...benefitListOfGift);
   
   return allBenefitList;
 }
@@ -363,9 +370,77 @@ function calAllBenefitList(dayForVisit, orderItems, menuList) {
  */
 function calBenefitOfDDay(dayForVisit) {
   const diffFromOneDay = dayForVisit - 1; // 12/1일부터의 차이
-  const discountAmt = G.CHRISTMAS_D_DAY_SALE_DEFAULT + G.CHRISTMAS_D_DAY_SALE_EVERY_DAY * diffFromOneDay;
+  const discountAmt = G.CHRISTMAS_D_DAY_SALE_DEFAULT + G.CHRISTMAS_D_DAY_SALE_PER_DAY * diffFromOneDay;
   const benefit = new Benefit({name: G.BENEFIT_NAME_CHRISTMAS_D_DAY_SALE, discountAmt: discountAmt});
   return benefit;
+}
+
+/**
+ * 평일 할인 혜택 구하기
+ * @param {number} dayForVisit 
+ * @param {Array<OrderItem>} orderItems 
+ * @param {Array<MenuItem>} menuList 
+ * @returns {Array<Benefit>}
+ */
+function calBenefitOfWeekdaysSale(dayForVisit, orderItems, menuList) {
+  if (!isWeekdays(dayForVisit)) { // 주말이라면 혜택 없음.
+    return new Benefit({name: G.BENEFIT_NAME_WEEKDAYS_SALE, discountAmt: 0});
+  }
+
+  let dessertCount = 0;
+  orderItems.forEach(orderItem => {
+    const type = getTypeByMenuName(orderItem.getName(), menuList);
+    if (type == G.ITEM_TYPE_DESSERT) {
+      dessertCount += orderItem.getCount();
+    }
+  });
+
+  const discountAmt = G.WEEKDAYS_SALE_PER_DESSERT * dessertCount;
+  const benefit = new Benefit({name: G.BENEFIT_NAME_WEEKDAYS_SALE, discountAmt: discountAmt});
+  return benefit;
+}
+
+/**
+ * 주말 할인 혜택 구하기
+ * @param {number} dayForVisit 
+ * @param {Array<OrderItem>} orderItems 
+ * @param {Array<MenuItem>} menuList 
+ * @returns {Array<Benefit>}
+ */
+function calBenefitOfWeekendSale(dayForVisit, orderItems, menuList) {
+  if (isWeekdays(dayForVisit)) { // 평일이라면 혜택 없음.
+    return new Benefit({name: G.BENEFIT_NAME_WEEKEND_SALE, discountAmt: 0});
+  }
+
+  let mainCount = 0;
+  orderItems.forEach(orderItem => {
+    const type = getTypeByMenuName(orderItem.getName(), menuList);
+    if (type == G.ITEM_TYPE_MAIN) {
+      mainCount += orderItem.getCount();
+    }
+  });
+
+  const discountAmt = G.WEEKEND_SALE_PER_MAIN * mainCount;
+  const benefit = new Benefit({name: G.BENEFIT_NAME_WEEKEND_SALE, discountAmt: discountAmt});
+  return benefit;
+}
+
+
+/**
+ * 평일인지 확인 (금, 토)
+ * 
+ * @param {*} dayForVisit
+ * @return {boolean} 
+ */
+function isWeekdays(dayForVisit) {
+  const day = String(dayForVisit).padStart(2, "0");
+  const dayOfWeek = commonUtils.getDayOfWeek(String(G.EVENT_YEAR) + String(G.EVENT_MONTH) + String(day));
+  
+  if (dayOfWeek == G.DAY_OF_WEEK_FRIDAY || dayOfWeek == G.DAY_OF_WEEK_SATURDAY) { // 주말: 금, 토
+    return false;
+  } else {
+    return true;
+  }
 }
 
 /**
@@ -491,10 +566,9 @@ function getMsgBenefitList(allBenefitList) {
   const titleMessage = `${G.TITLE_BENEFIT_LIST}\n`;
 
   let contentMessage = "";
-  allBenefitList.forEach(benefit => {
-    const name = benefit.getName();
-    const totalValue = benefit.getTotalValue();
-    contentMessage += `${name} -${commonUtils.getFormatAmt(totalValue)}\n`;
+  allBenefitList.filter(benefit => benefit.getTotalValue() > 0) // 혜택 가치가 0원보다 큰 것에 대해서만 출력한다.
+  .forEach(benefit => {
+    contentMessage += `${benefit.getName()} -${commonUtils.getFormatAmt(benefit.getTotalValue())}\n`; // "[내용]: -[할인금액]"
   });
   if (contentMessage == null || contentMessage == "") {
     contentMessage = `${G.TEXT_EMPTY}\n`;

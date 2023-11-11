@@ -54,12 +54,38 @@ const commonUtils = function() {
     return true;
   }
 
+  /**
+   * 요일 확인
+   * 
+   * @param {string} yyyyMMdd 
+   * @returns 0:일, 1:월, 2:화, 3:수, 4:목, 5:금, 6:토
+   */
+  function getDayOfWeek(yyyyMMdd) {
+    const yyyy = String(yyyyMMdd).substring(0, 4);
+    const MM = String(yyyyMMdd).substring(4, 6);
+    const dd = String(yyyyMMdd).substring(6, 8);
+    const dayOfWeek = new Date(yyyy, MM - 1, dd).getDay(); 
+    return dayOfWeek;
+  }
+
+  /**
+   * 배열 내 null 제거
+   * 
+   * @param {Array} param 
+   * @returns 
+   */
+  function removeNullInArray(param) {
+    return param.filter(item => item != null);
+  }
+
   return {
     callApi,
     getFormatAmt,
     getFormatDiscountAmt,
     deepCopyObj,
     isEmptyArray,
+    getDayOfWeek,
+    removeNullInArray,
   }
 }
 
