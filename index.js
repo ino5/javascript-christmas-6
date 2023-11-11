@@ -195,14 +195,19 @@ function validateOrderItems(orderItems, menuList) {
     throw new IllegalArgumentError(msgUtils.getMsg('MSG_ERR_001', '주문'));
   }
 
-  // validate - 중복 주문 없는지 확인
+  // validate - 중복 주문 불가능
   if (checkDuplicateInOrder(orderItems)) {
     throw new IllegalArgumentError(msgUtils.getMsg('MSG_ERR_001', '주문'));
   }
 
-  // validate - 음료만 주문했는지 확인
+  // validate - 음료만 주문 불가능
   if (checkOnlyDrinkInOrder(orderItems, menuList)) {
-    throw new IllegalArgumentError(msgUtils.getMsg('MSG_WRN_002', '주문'));
+    throw new IllegalArgumentError(msgUtils.getMsg('MSG_WRN_002'));
+  }
+
+  // validate - 메뉴 한 번에 최대 주문개수 초과
+  if (getTotalCountInOrder(orderItems) > G.MAX_ORDER_COUNT) {
+    throw new IllegalArgumentError(msgUtils.getMsg('MSG_WRN_003'));
   }
 
   return true;
@@ -241,6 +246,18 @@ function checkOnlyDrinkInOrder(orderItems, menuList) {
   });
   const hasOnlyDrink = !hasExceptDrink; // 음료 제외하고 가지고 있는 게 없다면 오직 음료만 가지고 있음
   return hasOnlyDrink;
+}
+
+/**
+ * 주문 총 개수 확인
+ * 
+ * @param {Array<OrderItem>} orderItems 
+ * @returns {number}
+ */
+function getTotalCountInOrder(orderItems) {
+  let totalCount = 0;
+  orderItems.forEach(item => totalCount += item.getCount());
+  return totalCount;
 }
 
 /**
