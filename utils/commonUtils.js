@@ -24,7 +24,11 @@ const commonUtils = function() {
    * 할인금액 포맷 반환
    */
   function getFormatDiscountAmt(amt) {
-    return '-' + getFormatAmt(amt);
+    let sign = '-';
+    if (Number(amt) == 0) { // 0원일 경우에는 부호 붙이지 않음.
+      sign = '';
+    }
+    return sign + getFormatAmt(amt);
   }
 
   /**
