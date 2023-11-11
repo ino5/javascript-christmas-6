@@ -183,9 +183,50 @@ function convertArrToOrderItems(orderInputArr, menuList) {
     orderItems.push(orderItem);
   });
 
-  // 주문항목목록 validate // TODO 중복 메뉴 입력 확인
+  // 주문항목목록 validate
+  validateOrderItems(orderItems);
 
   return orderItems;
+}
+
+/**
+ * 주문항목목록 validate
+ * 
+ * @param {Array<OrderItem>} orderItems 
+ * @returns 
+ */
+function validateOrderItems(orderItems) {
+  // validate - 항목 개수가 1개 이상인지
+  if (! (orderItems != null && orderItems.length > 0) ) {
+    throw new IllegalArgumentError(msgUtils.getMsg("MSG_ERR_001", "주문"));
+  }
+
+  // validate - 중복 주문 없는지
+  if (!checkNotDuplicateInOrder(orderItems)) {
+    alert('aaaaaaaaa');
+    throw new IllegalArgumentError(msgUtils.getMsg("MSG_ERR_001", "주문"));
+  }
+
+  return true;
+}
+
+/**
+ * 중복 주문 없는지 확인
+ * 
+ * @param {Array<OrderItem>} orderItems 
+ * @returns {boolean}
+ */
+function checkNotDuplicateInOrder(orderItems) {
+  const nameSet = new Set();
+  const isDuplicated = orderItems.some(item => {
+    if (nameSet.has(item.getName())) {
+      return true;
+    }
+    nameSet.add(item.getName());
+    return false;
+  });
+
+  return !isDuplicated;
 }
 
 /**
