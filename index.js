@@ -472,7 +472,8 @@ function getMsgGiftMenu(menuList, allBenefitList) {
  */
 function calBfSaleTotalAmt(orderItems, menuList) {
   const totalCost = orderItems.reduce((acc, item) => {
-    return acc + getCostByMenuName(item.getName(), menuList)
+    const cost = getCostByMenuName(item.getName(), menuList);
+    return acc + cost * item.getCount()
   }, 0);
   return totalCost
 }
