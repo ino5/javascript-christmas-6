@@ -43,13 +43,9 @@ const messageUtils = function() {
     const result = prompt(msg);
     const isCancel = result == null;
 
-    // 취소 시 재확인
+    // 취소
     if(isCancel) {
-      const isConfirm = confirmMsg(getMsg('MSG_CFM_001'));
-      if (isConfirm) {
-        throw new Error(getMsg('MSG_INF_002'));
-      }
-      promptMsg(msg);
+      throw new Error(getMsg('MSG_INF_002'));
     }
     
     return result;
