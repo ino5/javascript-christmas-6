@@ -1,6 +1,5 @@
 import constMsg from './constMessage.js';
 
-
 /* 상수 */
 const MIN_DAY_FOR_VISIT = 1;
 const MAX_DAY_FOR_VISIT = 31;
@@ -8,18 +7,31 @@ const MAX_DAY_FOR_VISIT = 31;
 const MENU_DELIMITER = ',';
 const MSG_PARAM = '[%s]';
 
-// 안내인사
-showMsgGreeting();
+/* 실행 */
 
-// 객체 생성
-const menuBoard = menuBoardFactory(); // 메뉴판객체
-const orderObj = orderObjFactory(); // 주문객체
+// play();
+window.play = play; // TODO 개발 테스트용
 
-// 예약일 받기
-orderObj.askDayForVisit();
 
-// 메뉴 주문받기
-orderObj.askMenuOrder();
+/**
+ * 실행
+ */
+function play() {
+  // 안내인사
+  showMsgGreeting();
+
+  // 객체 생성
+  const menuBoard = menuBoardFactory(); // 메뉴판객체
+  const orderObj = orderObjFactory(); // 주문객체
+
+  // 예약일 받기
+  orderObj.askDayForVisit();
+
+  // 메뉴 주문받기
+  orderObj.askMenuOrder();
+}
+
+
 
 function orderObjFactory() {
   let _dayForVisit; // 예약일
