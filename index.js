@@ -1,5 +1,6 @@
 import env from './env.js';
-import constMsg from './constMessage.js';
+import msg from './message.js';
+
 
 /* 상수 */
 const MIN_DAY_FOR_VISIT = 1;
@@ -40,11 +41,11 @@ function orderObjFactory() {
    */
   function askDayForVisit() {
     // prompt
-    const promptResult = promptMsg(getMsg(constMsg.PRT_001)); // 방문날짜 입력받기
+    const promptResult = promptMsg(getMsg(msg.PRT_001)); // 방문날짜 입력받기
 
     // validate - 수 범위
     if (isNaN(promptResult) || (promptResult < MIN_DAY_FOR_VISIT || promptResult > MAX_DAY_FOR_VISIT)) {
-      showError(constMsg.ERR_001);
+      showError(msg.ERR_001);
       askDayForVisit();
     }
   }
@@ -54,7 +55,7 @@ function orderObjFactory() {
    */
   function askMenuOrder() {
     // prompt
-    const promptResult = promptMsg(getMsg(constMsg.PRT_002)); // 주문받기
+    const promptResult = promptMsg(getMsg(msg.PRT_002)); // 주문받기
     let menuOrders = promptResult.split(MENU_DELIMITER);
     menuOrders = menuOrders.map(item => item.trim());
 
@@ -63,7 +64,7 @@ function orderObjFactory() {
     menuOrders.forEach(item => {
       // validate - 메뉴 형식
       if (!/(.+)-(\d)/.test(item)) { // "문자-숫자" 형태
-        showError(getMsg(constMsg.ERR_002));
+        showError(getMsg(msg.ERR_002));
       }
 
       // validate - 메뉴판에 없는 메뉴
@@ -90,7 +91,7 @@ function menuBoardFactory() {
 
 /* 출력 함수 */
 function showMsgGreeting() {
-  showMsg(getMsg(constMsg.INF_001));
+  showMsg(getMsg(msg.INF_001));
 }
 
 
@@ -115,7 +116,7 @@ function promptMsg(msg, defaultVal) {
 
   // 취소 시 다시 메시지 출력 
   if(isCancel) {
-    if (env.mode == "DEV") { // 개발모드일 경우 throw
+    if (env.isDev()) { // 개발모드일 경우 throw
       throw Error("prompt 취소");
 
     }
