@@ -38,6 +38,7 @@ const constants = {
   ORDER_DELIMITER:'-',
   REGEX_ORDER_INPUT_ITEM: /^(.+)-(\d*)$/, // "문자-숫자" 형태
 
+  TITLE_MENU_LIST: '<메뉴 목록>',
   TITLE_ORDER_MENU: '<주문 메뉴>',
   TITLE_BF_SALE_TOTAL_AMT: '<할인 전 총주문 금액>',
   TITLE_GIFT_MENU: '<증정 메뉴>',

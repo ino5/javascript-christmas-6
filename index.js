@@ -23,6 +23,9 @@ async function play() {
   // 안내인사
   showMsgGreeting();
 
+  // 메뉴판 보여주기
+  showMsgMenuList(menuList);
+
   // 방문날짜 입력 받기
   const dayForVisit = askDayForVisit();
 
@@ -58,6 +61,52 @@ async function getMenuList() {
  */
 function showMsgGreeting() {
   msgUtils.showMsg(msgUtils.getMsg('MSG_INF_001', G.EVENT_MONTH));
+}
+
+/**
+ * 메뉴판 보여주기
+ * 
+ * @param {Array<MenuItem>} menuList 
+ */
+function showMsgMenuList(menuList) {
+  const appetizerTypeStrArr = [];
+  const mainTypeStrArr = [];
+  const dessertTypeStrArr = [];
+  const drinkTypeStrArr = [];
+
+  const typeOrders = [G.ITEM_TYPE_APPETIZER, G.ITEM_TYPE_MAIN, G.ITEM_TYPE_DESSERT, G.ITEM_TYPE_DRINK]; 
+  const strArrOrders = [appetizerTypeStrArr, mainTypeStrArr, dessertTypeStrArr, drinkTypeStrArr];
+  
+  // 메뉴 종류별로 배열에 담기
+  menuList.forEach(menuItem => {
+    const menuStr = `${menuItem.getName()}(${commonUtils.getFormatAmt(menuItem.getCost())})`; // "[메뉴명]([가격])"
+    for (var i = 0; i < typeOrders.length; i++) {
+      const type = typeOrders[i];
+      const strArr = strArrOrders[i];
+      if (menuItem.getType() == type) {
+        strArr.push(menuStr);
+      } 
+    }
+  });
+
+  // 출력 문자열에 제목 추가
+  let outputStr = '';
+  const title = `${G.TITLE_MENU_LIST}\n`;
+  outputStr += title + '\n';
+
+  // 출력 문자열에 메뉴 추가
+  for (var i = 0; i < typeOrders.length; i++) {
+    const type = typeOrders[i];
+    const strArr = strArrOrders[i];
+    outputStr += `[${type}]\n`;
+    outputStr += `${strArr.join(', ')}\n`;
+    outputStr += '\n';
+  }
+
+  // 메시지 보여주기
+  msgUtils.showMsg(outputStr);
+
+  return outputStr;
 }
 
 /**
