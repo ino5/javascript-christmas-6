@@ -18,6 +18,14 @@ const constants = {
   ITEM_TYPE_DESSERT: '디저트',
   ITEM_TYPE_DRINK: '음료',
 
+  EVENT_BADGE_NONE: '없음',
+  EVENT_BADGE_STAR: '별',
+  EVENT_BADGE_TREE: '트리',
+  EVENT_BADGE_SANTA: '산타',
+  EVENT_BADGE_STAR_CONDITION_AMT: '5000',
+  EVENT_BADGE_TREE_CONDITION_AMT: '10000',
+  EVENT_BADGE_SANTA_CONDITION_AMT: '20000',
+
   TEXT_EMPTY: '없음',
   UNIT_COUNT: '개',
   UNIT_AMT: '원',
@@ -36,7 +44,7 @@ const constants = {
   TITLE_BENEFIT_LIST: '<혜택 내역>',
   TITLE_TOTAL_BENEFIT_AMT: '<총혜택 금액>',
   TITLE_AF_SALE_TOTAL_AMT: '<할인 후 예상 결제 금액>',
-  TITLE_12_EVENT_BADGE: '<12월 이벤트 배지>',
+  TITLE_EVENT_BADGE_12: '<12월 이벤트 배지>',
 
   BENEFIT_NAME_CHRISTMAS_D_DAY_SALE: '크리스마스 디데이 할인',
   BENEFIT_NAME_WEEKDAYS_SALE: '평일 할인',

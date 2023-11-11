@@ -535,8 +535,11 @@ function showMsgMyEventBenefits(dayForVisit, orderItems, allBenefitList, menuLis
   // 총혜택 금액 메시지 가져오기
   allMessage2 += getMsgAllBenefitTotalValue(allBenefitList) + '\n';
 
-  // 할인 후 예상 결제 금액 가져오기
+  // 할인 후 예상 결제 금액 메시지 가져오기
   allMessage2 += getMsgAfSaleTotalAmt(orderItems, menuList, allBenefitList) + '\n';
+
+  // 이벤트 배지 메시지 가져오기
+  allMessage2 += getMsgEventBadge(orderItems, menuList, allBenefitList) + '\n';
 
   // 중간 메시지 보여주기
   msgUtils.showMsg(allMessage);
@@ -662,6 +665,47 @@ function getMsgAfSaleTotalAmt(orderItems, menuList, allBenefitList) {
 
   const message = titleMessage + contentMessage;
   return message;
+}
+
+/**
+ * 이벤트 배지 메시지 가져오기
+ * 
+ * @param {Array<OrderItem>} orderItems
+ * @param {Array<MenuItem>} menuList
+ * @param {Array<Benefit>} allBenefitList
+ */
+function getMsgEventBadge(orderItems, menuList, allBenefitList) {
+  const titleMessage = `${G.TITLE_EVENT_BADGE_12}\n`;
+
+  const eventBadge = calEventBadge(orderItems, menuList, allBenefitList);
+  let contentMessage = eventBadge;
+  if (eventBadge == G.EVENT_BADGE_NONE) {
+    contentMessage = `${G.TEXT_EMPTY}\n`;
+  }
+
+  const message = titleMessage + contentMessage;
+  return message;
+}
+
+/**
+ * 이벤트 배지 메시지 계산하기
+ * 
+ * @param {Array<OrderItem>} orderItems
+ * @param {Array<MenuItem>} menuList
+ * @param {Array<Benefit>} allBenefitList
+ */
+function calEventBadge(orderItems, menuList, allBenefitList) {
+  const allBenefitTotalValue = calAllBenefitTotalValue(allBenefitList);
+  let eventBadge = G.EVENT_BADGE_NONE;
+  if (allBenefitTotalValue >= G.EVENT_BADGE_SANTA_CONDITION_AMT) {
+    eventBadge = G.EVENT_BADGE_SANTA;
+  } else if (allBenefitTotalValue >= G.EVENT_BADGE_TREE_CONDITION_AMT) {
+    eventBadge = G.EVENT_BADGE_TREE;
+  } else if (allBenefitTotalValue >= G.EVENT_BADGE_STAR_CONDITION_AMT) {
+    eventBadge = G.EVENT_BADGE_STAR;
+  }
+
+  return eventBadge;
 }
 
 /**
