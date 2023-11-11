@@ -1,3 +1,4 @@
+import env from './env.js';
 import constMsg from './constMessage.js';
 
 /* 상수 */
@@ -9,9 +10,7 @@ const MSG_PARAM = '[%s]';
 
 /* 실행 */
 
-// play();
-window.play = play; // TODO 개발 테스트용
-
+play();
 
 /**
  * 실행
@@ -110,12 +109,17 @@ function confirmMsg(msg) {
   return result;
 }
 
-function promptMsg(msg, defaultVal, allowCancel=false) {
+function promptMsg(msg, defaultVal) {
   const result = prompt(msg, defaultVal);
+  const isCancel = result == null;
 
-  // 취소 허용되지 않으면 취소시 다시 prompt
-  if(result == null && !allowCancel) {
-    promptMsg(msg, defaultVal, allowCancel);
+  // 취소 시 다시 메시지 출력 
+  if(isCancel) {
+    if (env.mode == "DEV") { // 개발모드일 경우 throw
+      throw Error("prompt 취소");
+
+    }
+    promptMsg(msg, defaultVal);
   }
   
   return result;
