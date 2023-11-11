@@ -15,5 +15,4 @@ const env = function() {
   };
 }
 
-
 export default env();
