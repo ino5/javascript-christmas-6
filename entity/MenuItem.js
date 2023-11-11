@@ -7,7 +7,7 @@ export class MenuItem {
   }
 
   getType() {
-    return this._cost;
+    return this._type;
   }
   getName() {
     return this._name;
