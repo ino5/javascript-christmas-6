@@ -514,7 +514,8 @@ function calBenefitListOfGiftEvent(dayForVisit, orderItems, menuList) {
  * @param {Array<Benefit>} allBenefitList
  */
 function showMsgMyEventBenefits(dayForVisit, orderItems, allBenefitList, menuList) {
-  let allMessage = ""; // 마지막에 보여줄 전체 메시지
+  let allMessage = ""; // 첫번째 출력 메시지
+  let allMessage2 = ""; // 두번째 출력 메시지
 
   // 제목 가져오기
   allMessage += getMsgMyEventBenefitsTitle(dayForVisit) + '\n';
@@ -532,10 +533,16 @@ function showMsgMyEventBenefits(dayForVisit, orderItems, allBenefitList, menuLis
   allMessage += getMsgBenefitList(allBenefitList) + '\n';
 
   // 총혜택 금액 메시지 가져오기
-  allMessage += getMsgAllBenefitTotalValue(allBenefitList) + '\n';  
+  allMessage2 += getMsgAllBenefitTotalValue(allBenefitList) + '\n';
 
-  // 전체 메시지 보여주기
+  // 할인 후 예상 결제 금액 가져오기
+  allMessage2 += getMsgAfSaleTotalAmt(orderItems, menuList, allBenefitList) + '\n';
+
+  // 중간 메시지 보여주기
   msgUtils.showMsg(allMessage);
+  
+  // 마지막 메시지 보여주기
+  msgUtils.showMsg(allMessage2);
 
 }
 
@@ -573,7 +580,7 @@ function getMsgMyOrderItems(orderItems) {
 function getMsgBfSaleTotalAmt(orderItems, menuList) {
   const titleMessage = `${G.TITLE_BF_SALE_TOTAL_AMT}\n`;
 
-  let totalCost = calBfSaleTotalAmt(orderItems, menuList);
+  const totalCost = calBfSaleTotalAmt(orderItems, menuList);
   const contentMessage = `${commonUtils.getFormatAmt(totalCost)}\n`;
 
   const message = titleMessage + contentMessage;
@@ -639,6 +646,25 @@ function getMsgAllBenefitTotalValue(allBenefitList) {
 }
 
 /**
+ * 할인 후 총주문 금액 가져오기
+ * 
+ * @param {Array<OrderItem>} orderItems
+ * @param {Array<MenuItem>} menuList
+ * @param {Array<Benefit>} allBenefitList
+ */
+function getMsgAfSaleTotalAmt(orderItems, menuList, allBenefitList) {
+  const titleMessage = `${G.TITLE_AF_SALE_TOTAL_AMT}\n`;
+
+  const bfSaleTotalAmt = calBfSaleTotalAmt(orderItems, menuList);
+  const allBenefitDiscountAmt = calAllBenefitDiscountAmt(allBenefitList);
+  const afSaleTotalAmt = bfSaleTotalAmt - allBenefitDiscountAmt; // 할인 전 금액 - 할인 금액
+  const contentMessage = `${commonUtils.getFormatAmt(afSaleTotalAmt)}\n`;
+
+  const message = titleMessage + contentMessage;
+  return message;
+}
+
+/**
  * 총혜택 금액 계산하기
  * 
  * @param {Array<Benefit>} allBenefitList
@@ -646,6 +672,18 @@ function getMsgAllBenefitTotalValue(allBenefitList) {
 function calAllBenefitTotalValue(allBenefitList) {
   const allBenefitTotalValue = allBenefitList.reduce((acc, benefit) => {
     return acc + benefit.getTotalValue();
+  }, 0);
+  return allBenefitTotalValue;
+}
+
+/**
+ * 총할인 금액 계산하기
+ * 
+ * @param {Array<Benefit>} allBenefitList
+ */
+function calAllBenefitDiscountAmt(allBenefitList) {
+  const allBenefitTotalValue = allBenefitList.reduce((acc, benefit) => {
+    return acc + benefit.getdiscountAmt();
   }, 0);
   return allBenefitTotalValue;
 }
