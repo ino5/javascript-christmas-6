@@ -1,10 +1,10 @@
 import env from './env.js';
 import G from './constants/globalConstants.js';
 import msgUtils from './utils/messageUtils.js';
+import commonUtils from './utils/commonUtils.js';
 import { IllegalArgumentError } from './errors/IllegalArgumentError.js';
 import { MenuItem } from './entity/MenuItem.js';
-import commonUtils from './utils/commonUtils.js';
-
+import { OrderItem } from './entity/OrderItem.js';
 
 /*** 메인 영역 ***/
 
@@ -106,8 +106,8 @@ function validateDayForVisit(dayForVisit) {
 /**
  * 주문항목 목록 입력받기
  * 
- * @param {Array<MenuItem>} menuList
- * @returns 
+ * @param {Array<MenuItem>} menuList 메뉴판
+ * @returns {Array<OrderItem>} orderItems 주문목록
  */
 function askOrderItems(menuList) {
   // prompt 호출
@@ -117,13 +117,13 @@ function askOrderItems(menuList) {
   let orderItems;
   try {
     const orderInputArr = convertInputToOrderInputArr(orderItemsInput); // 입력값 -> 입력값 배열
-    // 입력값 배열 -> 주문항목목록 // TODO
+    orderItems = convertArrToOrderItems(orderInputArr, menuList); // 입력값 배열 -> 주문항목목록
 
   } catch(e) { 
     if (e instanceof IllegalArgumentError) {
       msgUtils.showError(msgUtils.getMsg("MSG_ERR_001", "주문"));
-      askOrderItems(); // 재호출
-      return false;
+      askOrderItems(menuList); // 재호출
+      return null;
     }
     throw e;
   }
@@ -132,7 +132,7 @@ function askOrderItems(menuList) {
 }
 
 /**
- * 주문 입력값을 배열로 split
+ * 주문 입력값을 배열로 변환
  * 
  * @param {*} inputStr 
  * @returns 주문입력 배열
@@ -167,4 +167,75 @@ function validateOrderInpuArr(orderInputArr) {
   return true;
 }
 
+/**
+ * 주문입력배열을 주문항목목록으로 변환
+ * 
+ * @param {Array<string>} orderInputArr 
+ * @param {*} menuList 
+ * @returns 
+ */
+function convertArrToOrderItems(orderInputArr, menuList) {
+  const orderItems = [];
 
+  // OrderItem으로 변환
+  orderInputArr.forEach(orderInput => {
+    const orderItem = convertStringToOrderItem(orderInput, menuList);
+    orderItems.push(orderItem);
+  });
+
+  // 주문항목목록 validate // TODO 중복 메뉴 입력 확인
+
+  return orderItems;
+}
+
+/**
+ * 문자열을 OrderItem으로 변환
+ * 
+ * @param {string} orderInput "메뉴이름-주문수"
+ * @param {*} menuList 
+ * @returns {OrderItem}
+ */
+function convertStringToOrderItem(orderInput, menuList) {
+  // OrderItem으로 변환
+  const delimIndex = orderInput.lastIndexOf(G.ORDER_DELIMITER);
+  const name = orderInput.substring(0, delimIndex);
+  const count = orderInput.substring(delimIndex + 1);
+  const orderItem = new OrderItem({name, count});
+
+  // OrderItem validate
+  validateOrderItem(orderItem, menuList);  
+
+  return orderItem;
+}
+
+/**
+ * OrderItem validate
+ * 
+ * @param {OrderItem} orderItem 
+ * @param {Array<MenuItem>} menuList 
+ */
+function validateOrderItem(orderItem, menuList) {
+  // validate - 메뉴판에 있는 메뉴인지
+  if (!checkInMenuList(orderItem, menuList)) {
+    throw new IllegalArgumentError(msgUtils.getMsg("MSG_ERR_001", "주문"));
+  }
+
+  // validate - 주문 개수가 1개 이상인지
+  if (orderItem.getCount() < 1) {
+    throw new IllegalArgumentError(msgUtils.getMsg("MSG_ERR_001", "주문"));
+  }  
+
+  return true;
+}
+
+/**
+ * 메뉴판에 있는 메뉴를 주문했는지 확인하기
+ * 
+ * @param {OrderItem} orderItem 
+ * @param {Array<MenuItem>} menuList 
+ * @returns {boolean} 
+ */
+function checkInMenuList(orderItem, menuList) {
+  const existsInMenuList = menuList.some(menuItem => menuItem.getName() == orderItem.getName());
+  return existsInMenuList;  
+}
