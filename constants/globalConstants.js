@@ -3,9 +3,11 @@ const constants = {
   MIN_DAY_FOR_VISIT: 1,
   MAX_DAY_FOR_VISIT: 31,
   MAX_ORDER_COUNT: 20,
+  GIFT_EVENT_CONDITION_AMT: 120000,
 
   ITEM_TYPE_DRINK: '음료',
 
+  TEXT_EMPTY: '없음',
   UNIT_COUNT: '개',
 
   MENU_DELIMITER:',',
@@ -20,11 +22,13 @@ const constants = {
   TITLE_AF_SALE_TOTAL_AMT: '<할인 후 예상 결제 금액>',
   TITLE_12_EVENT_BADGE: '<12월 이벤트 배지>',
 
-  BENEFIT_CHRISTMAS_D_DAY_SALE: '크리스마스 디데이 할인',
-  BENEFIT_WEEKDAYS_SALE: '평일 할인',
-  BENEFIT_WEEKEND_SALE: '주말 할인',
-  BENEFIT_SPECIAL_SALE: '특별 할인',
-  BENEFIT_GIFT_EVENT: '증정 이벤트',
+  BENEFIT_NAME_CHRISTMAS_D_DAY_SALE: '크리스마스 디데이 할인',
+  BENEFIT_NAME_WEEKDAYS_SALE: '평일 할인',
+  BENEFIT_NAME_WEEKEND_SALE: '주말 할인',
+  BENEFIT_NAME_SPECIAL_SALE: '특별 할인',
+  BENEFIT_NAME_GIFT_EVENT: '증정 이벤트',
+
+  GIFT_NAME_SHAMPAGNE: '샴페인',
 
   URL_GET_MENU_LIST: '/menu.json',
 }

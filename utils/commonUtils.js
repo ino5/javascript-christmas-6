@@ -12,16 +12,33 @@ const commonUtils = function() {
   }
 
   /**
-   * 금액 포맷 변경
+   * 금액 포맷 반환
    */
   function getFormatAmt(amt) {
     return amt.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '원';
   }
 
+  /**
+   * 할인금액 포맷 반환
+   */
+  function getFormatDiscountAmt(amt) {
+    return '-' + amt.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '원';
+  }
+
+  /**
+   * 객체 깊은 복사
+   * 
+   * @param {*} paramObj 
+   */
+  function deepCopyObj(paramObj) {
+    return JSON.parse(JSON.stringify(paramObj));
+  }
 
   return {
     callApi,
     getFormatAmt,
+    getFormatDiscountAmt,
+    deepCopyObj,
   }
 }
 
