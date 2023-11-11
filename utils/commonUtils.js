@@ -11,9 +11,17 @@ const commonUtils = function() {
     return resJson;
   }
 
+  /**
+   * 금액 포맷 변경
+   */
+  function getFormatAmt(amt) {
+    return amt.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '원';
+  }
+
 
   return {
     callApi,
+    getFormatAmt,
   }
 }
 

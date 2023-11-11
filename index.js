@@ -30,7 +30,7 @@ async function play() {
   const orderItems = askOrderItems(menuList);
 
   // 나의 이벤트 혜택 보여주기
-  showMsgMyEventBenefits(dayForVisit, orderItems);
+  showMsgMyEventBenefits(dayForVisit, orderItems, menuList);
 
 }
 
@@ -333,16 +333,20 @@ function checkInMenuList(orderItem, menuList) {
 /**
  * 이벤트 혜택 보여주기
  * @param {number} dayForVisit 
- * @param {Array<OrderItem>} orderItems 
+ * @param {Array<OrderItem>} orderItems
+ * @param {Array<MenuItem>} menuList 
  */
-function showMsgMyEventBenefits(dayForVisit, orderItems) {
+function showMsgMyEventBenefits(dayForVisit, orderItems, menuList) {
   let allMessage = ""; // 마지막에 보여줄 전체 메시지
 
   // 제목 보여주기
-  allMessage += showMsgMyEventBenefitsTitle(dayForVisit) + '\n' + '\n';
+  allMessage += showMsgMyEventBenefitsTitle(dayForVisit) + '\n';
 
   // 주문 메뉴 메시지 보여주기
   allMessage += showMsgMyOrderItems(orderItems) + '\n';
+
+  // 할인 전 총주문 금액 보여주기
+  allMessage += showMsgBfSaleTotalAmt(orderItems, menuList) + '\n';
 
   // 전체 메시지 보여주기
   msgUtils.showMsg(allMessage);
@@ -357,7 +361,7 @@ function showMsgMyEventBenefitsTitle(dayForVisit) {
   const message = msgUtils.getMsg('MSG_INF_003', G.EVENT_MONTH, dayForVisit);
 
   msgUtils.showMsg(message);
-  return message;
+  return message + '\n';
 }
 
 /**
@@ -374,4 +378,40 @@ function showMsgMyOrderItems(orderItems) {
 
   msgUtils.showMsg(message);
   return message;
+}
+
+/**
+ * 할인 전 총주문 금액 보여주기
+ * 
+ * @param {Array<OrderItem>} orderItems
+ * @param {Array<MenuItem>} menuList
+ */
+function showMsgBfSaleTotalAmt(orderItems, menuList) {
+  let message = "";
+  message += `${G.TITLE_BF_SALE_TOTAL_AMT}\n`;
+
+  let totalCost = 0;
+  orderItems.forEach((item) =>{
+    totalCost += getCostByMenuName(item.getName(), menuList);
+  });
+  message += `${commonUtils.getFormatAmt(totalCost)}\n`;
+
+  msgUtils.showMsg(message);
+  return message + '\n';
+}
+
+/**
+ * 메뉴 가격 가져오기
+ * 
+ * @param {string} menuName
+ * @param {Array<MenuItem>} menuList
+ * @returns {string}
+ */
+function getCostByMenuName(menuName, menuList) {
+  for (let i = 0; i < menuList.length; i++) {
+    if (menuName == menuList[i].getName()) {
+      return menuList[i].getCost();
+    }
+  }
+  throw new IllegalArgumentError(msgUtils.getMsg('MSG_ERR_002'));
 }
