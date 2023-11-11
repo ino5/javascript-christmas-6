@@ -1,6 +1,6 @@
 import env from './env.js';
 import msg from './message.js';
-
+import common from './common.js';
 
 /* 상수 */
 const MIN_DAY_FOR_VISIT = 1;
