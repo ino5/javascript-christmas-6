@@ -344,7 +344,7 @@ function calAllBenefitList(dayForVisit, orderItems, menuList) {
   const allBenefitList = [];
 
   // 크리스마스 디데이 할인 혜택 구하기
-  const benefitOfDDay = calBenefitOfDDay(dayForVisit);
+  const benefitOfDDay = calBenefitOfDDay(dayForVisit, orderItems, menuList);
 
   // 평일 할인 혜택 구하기
   const benefitOfWeekdaysSale = calBenefitOfWeekdaysSale(dayForVisit, orderItems, menuList);
@@ -353,12 +353,13 @@ function calAllBenefitList(dayForVisit, orderItems, menuList) {
   const benefitOfWeekendSale = calBenefitOfWeekendSale(dayForVisit, orderItems, menuList);
 
   // 특별 할인 혜택 구하기
+  const benefitOfSpecialSale = calBenefitOfSpecialSale(dayForVisit, orderItems, menuList);
 
   // 증정 이벤트 혜택 구하기
-  const benefitListOfGift = calBenefitListOfGiftEvent(orderItems, menuList);
+  const benefitListOfGift = calBenefitListOfGiftEvent(dayForVisit, orderItems, menuList);
   
   // 전체혜택목록에 담기
-  allBenefitList.push(benefitOfDDay, benefitOfWeekdaysSale, benefitOfWeekendSale, ...benefitListOfGift);
+  allBenefitList.push(benefitOfDDay, benefitOfWeekdaysSale, benefitOfWeekendSale, benefitOfSpecialSale, ...benefitListOfGift);
   
   return allBenefitList;
 }
@@ -366,9 +367,11 @@ function calAllBenefitList(dayForVisit, orderItems, menuList) {
 /**
  * 크리스마스 디데이 할인 혜택 구하기
  * @param {number} dayForVisit 
+ * @param {Array<OrderItem>} orderItems 
+ * @param {Array<MenuItem>} menuList 
  * @returns {Benefit}
  */
-function calBenefitOfDDay(dayForVisit) {
+function calBenefitOfDDay(dayForVisit, orderItems, menuList) {
   const diffFromOneDay = dayForVisit - 1; // 12/1일부터의 차이
   const discountAmt = G.CHRISTMAS_D_DAY_SALE_DEFAULT + G.CHRISTMAS_D_DAY_SALE_PER_DAY * diffFromOneDay;
   const benefit = new Benefit({name: G.BENEFIT_NAME_CHRISTMAS_D_DAY_SALE, discountAmt: discountAmt});
@@ -444,12 +447,44 @@ function isWeekdays(dayForVisit) {
 }
 
 /**
+ * 특별 할인 혜택 구하기
+ * @param {number} dayForVisit 
+ * @param {Array<OrderItem>} orderItems 
+ * @param {Array<MenuItem>} menuList 
+ * @returns {Array<Benefit>}
+ */
+function calBenefitOfSpecialSale(dayForVisit, orderItems, menuList) {
+  if (!isSpecialDay(dayForVisit)) { // 특별할인데이가 아니면 할인하지 않음
+    return new Benefit({name: G.BENEFIT_NAME_SPECIAL_SALE, discountAmt: 0});
+  }
+
+  const discountAmt = G.SPECIAL_SALE_TOTAL;
+  const benefit = new Benefit({name: G.BENEFIT_NAME_WEEKEND_SALE, discountAmt: discountAmt});
+  return benefit;  
+}
+
+/**
+ * 특별할인데이인지 확인
+ * 
+ * @param {*} dayForVisit
+ * @return {boolean} 
+ */
+function isSpecialDay(dayForVisit) {
+  if (G.SPECIAL_SALE_DAY_ARR.includes(Number(dayForVisit))) {
+    return true;
+  }
+
+  return false;
+}
+
+/**
  * 증정 이벤트 혜택 구하기
+ * @param {number} dayForVisit
  * @param {Array<OrderItem>} orderItems
  * @param {Array<MenuItem>} menuList 
  * @returns {Array<Benefit>}
  */
-function calBenefitListOfGiftEvent(orderItems, menuList) {
+function calBenefitListOfGiftEvent(dayForVisit, orderItems, menuList) {
   let benefitList = [];
 
   // 총주문 금액 12만 원 이상일 때, 샴페인 1개 증정
