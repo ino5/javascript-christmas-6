@@ -1,5 +1,6 @@
-import env from '/env.js';
-import MSG from '/messageConstant.js';
+import { IllegalArgumentError } from '../errors/IllegalArgumentError.js';
+import env from '../env.js';
+import MSG from '../constants/messageConstants.js';
 
 const messageUtils = function() {
 
@@ -18,7 +19,7 @@ const messageUtils = function() {
    * @param {String} msg 
    */
   function showError(msg) {
-    showMsg(MSG_ERROR_PREFIX + msg);
+    showMsg(MSG.ERROR_PREFIX + msg);
   }
 
   /**
@@ -45,8 +46,7 @@ const messageUtils = function() {
     // 취소 시 다시 메시지 출력 
     if(isCancel) {
       if (env.isDev()) { // 개발모드일 경우 throw
-        throw Error('prompt 취소');
-
+        throw new IllegalArgumentError("에러 발생");
       }
       promptMsg(msg);
     }
@@ -70,7 +70,7 @@ const messageUtils = function() {
 
     // param 대입
     for (var i = 0; i < strParamArgs.length; i++) {
-      result.replace(MSG.MSG_PARAM, strParamArgs[i]);
+      result = result.replace(MSG.PARAM, strParamArgs[i]);
     }
 
     return result;
