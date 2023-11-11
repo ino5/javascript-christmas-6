@@ -514,38 +514,38 @@ function calBenefitListOfGiftEvent(dayForVisit, orderItems, menuList) {
  * @param {Array<Benefit>} allBenefitList
  */
 function showMsgMyEventBenefits(dayForVisit, orderItems, allBenefitList, menuList) {
-  let allMessage = ""; // 첫번째 출력 메시지
-  let allMessage2 = ""; // 두번째 출력 메시지
+  let firstOutput = ""; // 첫번째 출력 메시지
+  let lastOutput = ""; // 마지막 출력 메시지
 
   // 제목 가져오기
-  allMessage += getMsgMyEventBenefitsTitle(dayForVisit) + '\n';
+  firstOutput += getMsgMyEventBenefitsTitle(dayForVisit) + '\n';
 
   // 주문 메뉴 메시지 가져오기
-  allMessage += getMsgMyOrderItems(orderItems) + '\n';
+  firstOutput += getMsgMyOrderItems(orderItems) + '\n';
 
   // 할인 전 총주문 금액 메시지 가져오기
-  allMessage += getMsgBfSaleTotalAmt(orderItems, menuList) + '\n';
+  firstOutput += getMsgBfSaleTotalAmt(orderItems, menuList) + '\n';
 
   // 증정 메뉴 메시지 가져오기
-  allMessage += getMsgGiftMenu(allBenefitList) + '\n';
+  firstOutput += getMsgGiftMenu(allBenefitList) + '\n';
 
   // 혜택 내역 메시지 가져오기
-  allMessage += getMsgBenefitList(allBenefitList) + '\n';
+  lastOutput += getMsgBenefitList(allBenefitList) + '\n';
 
   // 총혜택 금액 메시지 가져오기
-  allMessage2 += getMsgAllBenefitTotalValue(allBenefitList) + '\n';
+  lastOutput += getMsgAllBenefitTotalValue(allBenefitList) + '\n';
 
   // 할인 후 예상 결제 금액 메시지 가져오기
-  allMessage2 += getMsgAfSaleTotalAmt(orderItems, menuList, allBenefitList) + '\n';
+  lastOutput += getMsgAfSaleTotalAmt(orderItems, menuList, allBenefitList) + '\n';
 
   // 이벤트 배지 메시지 가져오기
-  allMessage2 += getMsgEventBadge(orderItems, menuList, allBenefitList) + '\n';
+  lastOutput += getMsgEventBadge(orderItems, menuList, allBenefitList) + '\n';
 
-  // 중간 메시지 보여주기
-  msgUtils.showMsg(allMessage);
+  // 첫 중간 메시지 보여주기
+  msgUtils.showMsg(firstOutput);
   
   // 마지막 메시지 보여주기
-  msgUtils.showMsg(allMessage2);
+  msgUtils.showMsg(lastOutput);
 
 }
 
