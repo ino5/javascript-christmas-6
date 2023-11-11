@@ -529,7 +529,10 @@ function showMsgMyEventBenefits(dayForVisit, orderItems, allBenefitList, menuLis
   allMessage += getMsgGiftMenu(allBenefitList) + '\n';
 
   // 혜택 내역 메시지 가져오기
-  allMessage += getMsgBenefitList(allBenefitList);
+  allMessage += getMsgBenefitList(allBenefitList) + '\n';
+
+  // 총혜택 금액 메시지 가져오기
+  allMessage += getMsgAllBenefitTotalValue(allBenefitList) + '\n';  
 
   // 전체 메시지 보여주기
   msgUtils.showMsg(allMessage);
@@ -621,6 +624,33 @@ function getMsgBenefitList(allBenefitList) {
 }
 
 /**
+ * 총혜택 금액 메시지 가져오기
+ * 
+ * @param {Array<Benefit>} allBenefitList
+ */
+function getMsgAllBenefitTotalValue(allBenefitList) {
+  const titleMessage = `${G.TITLE_TOTAL_BENEFIT_AMT}\n`;
+
+  const allBenefitTotalValue = calAllBenefitTotalValue(allBenefitList);
+  const contentMessage = `${commonUtils.getFormatDiscountAmt(allBenefitTotalValue)}\n`;
+
+  const message = titleMessage + contentMessage;
+  return message;
+}
+
+/**
+ * 총혜택 금액 계산하기
+ * 
+ * @param {Array<Benefit>} allBenefitList
+ */
+function calAllBenefitTotalValue(allBenefitList) {
+  const allBenefitTotalValue = allBenefitList.reduce((acc, benefit) => {
+    return acc + benefit.getTotalValue();
+  }, 0);
+  return allBenefitTotalValue;
+}
+
+/**
  * 할인 전 총주문 금액 계산하기
  * 
  * @param {Array<OrderItem>} orderItems
@@ -629,9 +659,9 @@ function getMsgBenefitList(allBenefitList) {
 function calBfSaleTotalAmt(orderItems, menuList) {
   const totalCost = orderItems.reduce((acc, item) => {
     const cost = getCostByMenuName(item.getName(), menuList);
-    return acc + cost * item.getCount()
+    return acc + cost * item.getCount();
   }, 0);
-  return totalCost
+  return totalCost;
 }
 
 /**
