@@ -7,14 +7,7 @@ import { MenuItem } from './entity/MenuItem.js';
 import { OrderItem } from './entity/OrderItem.js';
 
 /*** 메인 영역 ***/
-
-// 실행
-if (env.isDev()) { // 개발모드일 경우 수동으로 실행
-  window.play = play;
-} else {
-  play();
-}
-
+window.play = play;
 
 /*** 함수 영역 ***/
 
@@ -56,7 +49,7 @@ async function getMenuList() {
  * 안내인사 보여주기
  */
 function showMsgGreeting() {
-  msgUtils.showMsg(msgUtils.getMsg("MSG_INF_001", G.NOW_MONTH));
+  msgUtils.showMsg(msgUtils.getMsg('MSG_INF_001', G.NOW_MONTH));
 }
 
 /**
@@ -66,14 +59,14 @@ function showMsgGreeting() {
  */
 function askDayForVisit() {
   // prompt 호출
-  const dayForVisit = msgUtils.promptMsg(msgUtils.getMsg("MSG_PRT_001", G.NOW_MONTH));
+  const dayForVisit = msgUtils.promptMsg(msgUtils.getMsg('MSG_PRT_001', G.NOW_MONTH));
 
   // 입력값 validate
   try {
     validateDayForVisit(dayForVisit);
   } catch(e) {
     if (e instanceof IllegalArgumentError) {
-      msgUtils.showError(msgUtils.getMsg("MSG_ERR_001", "날짜"));
+      msgUtils.showError(msgUtils.getMsg('MSG_ERR_001', '날짜'));
       askDayForVisit(); // 재호출
       return false;
     }
@@ -92,12 +85,12 @@ function askDayForVisit() {
 function validateDayForVisit(dayForVisit) {
   // validate - 숫자 여부
   if (isNaN(dayForVisit)) {
-    throw new IllegalArgumentError(msgUtils.getMsg("MSG_ERR_001", "날짜"));
+    throw new IllegalArgumentError(msgUtils.getMsg('MSG_ERR_001', '날짜'));
   }
 
   // validate - 수 범위
   if ((dayForVisit < G.MIN_DAY_FOR_VISIT || dayForVisit > G.MAX_DAY_FOR_VISIT)) {
-    throw new IllegalArgumentError(msgUtils.getMsg("MSG_ERR_001", "날짜"));
+    throw new IllegalArgumentError(msgUtils.getMsg('MSG_ERR_001', '날짜'));
   }
 
   return true;
@@ -111,7 +104,7 @@ function validateDayForVisit(dayForVisit) {
  */
 function askOrderItems(menuList) {
   // prompt 호출
-  const orderItemsInput = msgUtils.promptMsg(msgUtils.getMsg("MSG_PRT_002"));
+  const orderItemsInput = msgUtils.promptMsg(msgUtils.getMsg('MSG_PRT_002'));
 
   // 주문항목목록으로 변환
   let orderItems;
@@ -121,7 +114,7 @@ function askOrderItems(menuList) {
 
   } catch(e) { 
     if (e instanceof IllegalArgumentError) {
-      msgUtils.showError(msgUtils.getMsg("MSG_ERR_001", "주문"));
+      msgUtils.showError(msgUtils.getMsg('MSG_ERR_001', '주문'));
       askOrderItems(menuList); // 재호출
       return null;
     }
@@ -154,13 +147,13 @@ function convertInputToOrderInputArr(inputStr) {
 function validateOrderInpuArr(orderInputArr) {
   // 배열 길이 체크
   if (orderInputArr == null || orderInputArr.length < 1) {
-    throw new IllegalArgumentError(msgUtils.getMsg("MSG_ERR_001", "주문"));
+    throw new IllegalArgumentError(msgUtils.getMsg('MSG_ERR_001', '주문'));
   }
 
   // 입력값 형태 validate
   orderInputArr.forEach(item => {
-    if (!G.REGEX_ORDER_INPUT_ITEM.test(item)) { // "문자-숫자" 형태
-      throw new IllegalArgumentError(msgUtils.getMsg("MSG_ERR_001", "주문"));
+    if (!G.REGEX_ORDER_INPUT_ITEM.test(item)) { // '문자-숫자' 형태
+      throw new IllegalArgumentError(msgUtils.getMsg('MSG_ERR_001', '주문'));
     }
   });
 
@@ -198,13 +191,13 @@ function convertArrToOrderItems(orderInputArr, menuList) {
 function validateOrderItems(orderItems) {
   // validate - 항목 개수가 1개 이상인지
   if (! (orderItems != null && orderItems.length > 0) ) {
-    throw new IllegalArgumentError(msgUtils.getMsg("MSG_ERR_001", "주문"));
+    throw new IllegalArgumentError(msgUtils.getMsg('MSG_ERR_001', '주문'));
   }
 
   // validate - 중복 주문 없는지
   if (!checkNotDuplicateInOrder(orderItems)) {
     alert('aaaaaaaaa');
-    throw new IllegalArgumentError(msgUtils.getMsg("MSG_ERR_001", "주문"));
+    throw new IllegalArgumentError(msgUtils.getMsg('MSG_ERR_001', '주문'));
   }
 
   return true;
@@ -232,7 +225,7 @@ function checkNotDuplicateInOrder(orderItems) {
 /**
  * 문자열을 OrderItem으로 변환
  * 
- * @param {string} orderInput "메뉴이름-주문수"
+ * @param {string} orderInput '메뉴이름-주문수'
  * @param {*} menuList 
  * @returns {OrderItem}
  */
@@ -258,12 +251,12 @@ function convertStringToOrderItem(orderInput, menuList) {
 function validateOrderItem(orderItem, menuList) {
   // validate - 메뉴판에 있는 메뉴인지
   if (!checkInMenuList(orderItem, menuList)) {
-    throw new IllegalArgumentError(msgUtils.getMsg("MSG_ERR_001", "주문"));
+    throw new IllegalArgumentError(msgUtils.getMsg('MSG_ERR_001', '주문'));
   }
 
   // validate - 주문 개수가 1개 이상인지
   if (orderItem.getCount() < 1) {
-    throw new IllegalArgumentError(msgUtils.getMsg("MSG_ERR_001", "주문"));
+    throw new IllegalArgumentError(msgUtils.getMsg('MSG_ERR_001', '주문'));
   }  
 
   return true;

@@ -43,10 +43,11 @@ const messageUtils = function() {
     const result = prompt(msg);
     const isCancel = result == null;
 
-    // 취소 시 다시 메시지 출력 
+    // 취소 시 재확인
     if(isCancel) {
-      if (env.isDev()) { // 개발모드일 경우 throw
-        throw new IllegalArgumentError("에러 발생");
+      const isConfirm = confirmMsg(getMsg('MSG_CFM_001'));
+      if (isConfirm) {
+        throw new Error(getMsg('MSG_INF_002'));
       }
       promptMsg(msg);
     }
