@@ -29,8 +29,8 @@ async function play() {
   // 주문 받기
   const orderItems = askOrderItems(menuList);
 
-  // 이벤트 혜택 보여주기
-  showMsgEventBenefits(dayForVisit, orderItems);
+  // 나의 이벤트 혜택 보여주기
+  showMsgMyEventBenefits(dayForVisit, orderItems);
 
 }
 
@@ -72,8 +72,7 @@ function askDayForVisit() {
   } catch(e) {
     if (e instanceof IllegalArgumentError) {
       msgUtils.showError(e.message);
-      askDayForVisit(); // 재호출
-      return false;
+      return askDayForVisit(); // 재호출
     }
     throw e;
   }
@@ -120,8 +119,7 @@ function askOrderItems(menuList) {
   } catch(e) { 
     if (e instanceof IllegalArgumentError) {
       msgUtils.showError(e.message);
-      askOrderItems(menuList); // 재호출
-      return null;
+      return askOrderItems(menuList); // 재호출
     }
     throw e;
   }
@@ -337,7 +335,43 @@ function checkInMenuList(orderItem, menuList) {
  * @param {number} dayForVisit 
  * @param {Array<OrderItem>} orderItems 
  */
-function showMsgEventBenefits(dayForVisit, orderItems) {
+function showMsgMyEventBenefits(dayForVisit, orderItems) {
+  let allMessage = ""; // 마지막에 보여줄 전체 메시지
+
   // 제목 보여주기
-  msgUtils.showMsg(msgUtils.getMsg('MSG_INF_003', G.EVENT_MONTH, dayForVisit));
+  allMessage += showMsgMyEventBenefitsTitle(dayForVisit) + '\n' + '\n';
+
+  // 주문 메뉴 메시지 보여주기
+  allMessage += showMsgMyOrderItems(orderItems) + '\n';
+
+  // 전체 메시지 보여주기
+  msgUtils.showMsg(allMessage);
+
+}
+
+/**
+ * 이벤트 혜택 제목 보여주기
+ * @param {*} dayForVisit 
+ */
+function showMsgMyEventBenefitsTitle(dayForVisit) {
+  const message = msgUtils.getMsg('MSG_INF_003', G.EVENT_MONTH, dayForVisit);
+
+  msgUtils.showMsg(message);
+  return message;
+}
+
+/**
+ * 주문 메뉴 메시지 보여주기
+ * @param {Array<OrderItem>} orderItems 
+ */
+function showMsgMyOrderItems(orderItems) {
+  let message = "";
+  message += `${G.TITLE_ORDER_MENU}\n`;
+
+  orderItems.forEach((item) =>{
+    message += `${item.getName()} ${item.getCount()}${G.UNIT_COUNT}\n`; 
+  });
+
+  msgUtils.showMsg(message);
+  return message;
 }
