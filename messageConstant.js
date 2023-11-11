@@ -1,5 +1,6 @@
 const message = {
   MSG_PARAM: '[%s]',
+  MSG_ERROR_PREFIX: '[ERROR]',
 
   MSG_INF_001: '안녕하세요! 우테코 식당 12월 이벤트 플래너입니다.',
 

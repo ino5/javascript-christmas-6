@@ -1,17 +1,7 @@
-import MSG from './messageConstant.js';
+import env from '/env.js';
+import MSG from '/messageConstant.js';
 
-const commonUtils = function() {
-  
-  /**
-   * API 호출
-   * 
-   * @param {String} url 
-   */
-  async function callApi(url) {
-    const res = await fetch(url);
-    const resJson = await res.json();
-    return resJson;
-  }
+const messageUtils = function() {
 
   /**
    * 메시지 출력
@@ -28,7 +18,7 @@ const commonUtils = function() {
    * @param {String} msg 
    */
   function showError(msg) {
-    showMsg('[ERROR]' + msg);
+    showMsg(MSG_ERROR_PREFIX + msg);
   }
 
   /**
@@ -55,7 +45,7 @@ const commonUtils = function() {
     // 취소 시 다시 메시지 출력 
     if(isCancel) {
       if (env.isDev()) { // 개발모드일 경우 throw
-        throw Error("prompt 취소");
+        throw Error('prompt 취소');
 
       }
       promptMsg(msg);
@@ -75,7 +65,7 @@ const commonUtils = function() {
     
     // 유효한 코드가 아니라면 빈값 출력
     if (result == null) {
-      result = "";
+      result = '';
     }
 
     // param 대입
@@ -88,7 +78,6 @@ const commonUtils = function() {
 
 
   return {
-    callApi,
     showMsg,
     showError,
     confirmMsg,
@@ -97,4 +86,4 @@ const commonUtils = function() {
   }
 }
 
-export default commonUtils();
+export default messageUtils();
