@@ -4,7 +4,7 @@ const env = function() {
   const MODE_PROD = "PROD";
   
   /* 환경 */
-  const mode = MODE_DEV;
+  const mode = MODE_PROD;
 
   function isDev() {
     return mode == MODE_DEV;
